@@ -8,7 +8,7 @@
 library(shiny)
 library(tidyverse)
 library(glmnet)
-options(shiny.maxRequestSize = 30*1024^2)
+options(shiny.maxRequestSize = 1000*1024^2)
 
 shinyUI(fluidPage(
 
@@ -17,23 +17,91 @@ shinyUI(fluidPage(
 
   # Sidebar with a slider input for number of bins
   sidebarLayout(
-    
     sidebarPanel(
-      tags$h4(radioButtons("init", "Do you have featurized data?",
+      tags$h4(radioButtons("init", "Are images featurized properly?",
                            c("Yes", "No"), "")),
-      uiOutput("file")
+      uiOutput("exportTraining"),
+      uiOutput("exportedTraining"),
+      uiOutput("file"),
+      uiOutput("showImg"),
+      tableOutput("table"),
+      textOutput("detectImages"),
+      uiOutput("featurize"),
+      uiOutput("continue"), 
+      hr(),
+      uiOutput("label"),
+      uiOutput("image"),
+      tags$h4(textOutput("labelTextInfo")),
+      tags$h4(textOutput("imageTextInfo")),
+      uiOutput("confirmSelection")
     ),
-    
     
     # Show a plot of the generated distribution
     mainPanel(
-      tableOutput("table"),
-      uiOutput("label"),
-      textOutput("labelTextInfo"),
-      uiOutput("genMod"),
-      tableOutput("round")
+        tabsetPanel(id = "tabactice", type = "tabs",
+                    tabPanel("Plot", 
+                             uiOutput("finished_now_Export"),
+                             uiOutput("finalize"),
+                             uiOutput("genMod"),
+                             tags$h3(textOutput("acc")),
+                             plotOutput("round"),
+                             uiOutput("slider"),
+                             hr(),
+                             uiOutput("afterPlot")
+                    ),
+                    tabPanel("Least Confident Data",
+                             tableOutput("getDatToLab"),
+                             uiOutput("numToExport"),
+                             uiOutput("exportNeedLabs")),
+                    tabPanel("Image", 
+                             tags$h4(textOutput("canYouLabel")),
+                             uiOutput("img"),
+                             hr(),
+                             uiOutput("cheatLabeling"),
+                             hr(),
+                             uiOutput("applyLabel"),
+                             uiOutput("saveLabel"),
+                             tags$h3(textOutput("saveSuccessful")),
+                             tags$p(textOutput("numLabelsInfo")),
+                             hr(),
+                             uiOutput("goToNextRound")),
+                    tabPanel("View Dataset",
+                             tableOutput("getView"),
+                             hr(),
+                             tags$h4(textOutput("dfSummary")),
+                             hr(),
+                             hr(),
+                             uiOutput("continueTolabel")
+                             ),
+                    tabPanel("View Featurized dataset",
+                             br(),
+                             textOutput("wait"),
+                             hr(),
+                             hr(),
+                             tableOutput("getViewfeaturized")
+                             ),
+                    tabPanel("Size of Labeled Data",
+                             tags$h4(textOutput("sizeCheck")),
+                             uiOutput("sizeInfo"),
+                             hr(),
+                             hr(),
+                             uiOutput("StartLabeling"),
+                             uiOutput("StartActice")
+                    ),
+                    tabPanel("Active Learning Labeling",
+                             tags$h4("Can you label this image?"),
+                             uiOutput("showImage"),
+                             hr(),
+                             uiOutput("cheatLabeling2"),
+                             hr(),
+                             uiOutput("applyAL_Label"),
+                             uiOutput("saveAL_Label"),
+                             uiOutput("ALsaveSuccessful")
+                             # tags$h4(textOutput("goToNextRound"))
+                    )
+        )
+      )
     )
-  
-    
+
     )
-))
+)
